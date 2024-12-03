@@ -2,6 +2,7 @@ package com.reservaction.user_management_service.service;
 
 
 import com.reservaction.user_management_service.client.EmailServiceClient;
+import com.reservaction.user_management_service.dto.EmailRequest;
 import com.reservaction.user_management_service.entity.AppUser;
 import com.reservaction.user_management_service.entity.UserRole;
 import com.reservaction.user_management_service.repository.RoleRepository;
@@ -30,7 +31,7 @@ public class RegisterService {
 
 
 
-
+    // registering attendees //
     public AppUser registerUser(String username, String email, String password, List<String> roleNames) throws IllegalAccessException {
         if (userRepository.findByUsername(username).isPresent()){
             throw new IllegalAccessException("Username taken");
@@ -63,6 +64,7 @@ public class RegisterService {
         return registeredUser;
     }
 
+    // registering organizers //
     public AppUser registerOrganizer(String organization, String username, String email, String password, List<String> roleNames) throws IllegalAccessException {
         if (userRepository.findByUsername(username).isPresent()){
             throw new IllegalAccessException("Username taken");
@@ -92,15 +94,47 @@ public class RegisterService {
         user.setEnabled(false);
         user.setApproved(false);
 
-        AppUser registeredUser = userRepository.save(user);
+        AppUser registeredOrganizer = userRepository.save(user);
         sendVerificationEmail(email, token);
-        return registeredUser;
+        return registeredOrganizer;
     }
 
+    // registering moderators //
+    public AppUser registerModerator(String username, String password, List<String> roleNames) throws IllegalAccessException {
+        if (userRepository.findByUsername(username).isPresent()){
+            throw new IllegalAccessException("Username taken");
+        }
+        String hashedPassword = passwordEncoder.encode(password);
+
+        List<UserRole> roles;
+        if (roleNames == null || roleNames.isEmpty()) {
+            roles = List.of(roleRepository.findByName("MODERATOR")
+                    .orElseThrow(() -> new RuntimeException("role not found")));
+        } else {
+            roles = roleNames.stream()
+                    .map(roleName -> roleRepository.findByName(roleName)
+                            .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
+                    .collect(Collectors.toList());
+        }
+
+        AppUser user = new AppUser();
+        user.setUsername(username);
+        user.setPassword(hashedPassword);
+        user.setRoles(roles);
+        user.setEnabled(true);
+
+        return userRepository.save(user);
+    }
+
+    // sending verification email using mailing service //
     public void sendVerificationEmail(String email, String token){
-        emailServiceClient.sendVerificationEmail(email, token);
+        EmailRequest request = new EmailRequest();
+        request.setEmail(email);
+        request.setToken(token);
+        emailServiceClient.sendVerificationEmail(request);
     }
 
+    // verifying users with emails //
     public boolean verifyUser(String token) {
         Optional<AppUser> userOptional = userRepository.findByVerificationToken(token);
         if (userOptional.isEmpty()) return false;
@@ -110,5 +144,22 @@ public class RegisterService {
         user.setVerificationToken(null);
         userRepository.save(user);
         return true;
+    }
+
+    // approving organizers if they exist //
+    public void approveOrganizer(String id) {
+        AppUser user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.getRoles().stream().anyMatch(role -> role.getName().equals("ORGANIZER"))) {
+            throw new IllegalArgumentException("User is not an organizer");
+        }
+
+        if (user.isApproved()) {
+            throw new IllegalStateException("Organizer is already approved");
+        }
+
+        user.setApproved(true);
+        userRepository.save(user);
     }
 }

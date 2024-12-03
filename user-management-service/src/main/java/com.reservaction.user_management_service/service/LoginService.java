@@ -2,6 +2,7 @@ package com.reservaction.user_management_service.service;
 
 
 import com.reservaction.user_management_service.client.EmailServiceClient;
+import com.reservaction.user_management_service.dto.EmailRequest;
 import com.reservaction.user_management_service.entity.AppUser;
 import com.reservaction.user_management_service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +73,7 @@ public class LoginService {
         String token = UUID.randomUUID().toString();
         AppUser user = userOptional.get();
         user.setResetPasswordToken(token);
-        user.setResetPasswordTokenExpiry(Instant.now().plus(20, ChronoUnit.SECONDS));
+        user.setResetPasswordTokenExpiry(Instant.now().plus(5, ChronoUnit.MINUTES));
 
         userRepository.save(user);
         sendResetPasswordEmail(user.getEmail(), token);
@@ -103,6 +104,9 @@ public class LoginService {
     }
 
     public void sendResetPasswordEmail(String email, String token){
-        emailServiceClient.sendResetPasswordEmail(email, token);
+        EmailRequest request = new EmailRequest();
+        request.setEmail(email);
+        request.setToken(token);
+        emailServiceClient.sendResetPasswordEmail(request);
     }
 }

@@ -31,10 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-
-# Ignore all .pem files
-*.pem
-
-# Ignore specific folder inside resources
-/src/main/resources/certs/*
-
