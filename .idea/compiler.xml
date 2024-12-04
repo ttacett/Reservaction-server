@@ -8,12 +8,24 @@
         <outputRelativeToContentRoot value="true" />
         <module name="mailing-service" />
         <module name="user-management-service" />
-        <module name="gateway" />
         <module name="discovery-service" />
+        <module name="gateway-service" />
+      </profile>
+      <profile name="Annotation profile for test-sec" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
+        </processorPath>
+        <module name="test-sec" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="eureka-server" target="17" />
+      <module name="gateway" target="22" />
+      <module name="gateway-service (1)" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -21,7 +33,10 @@
       <module name="discovery-service" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
       <module name="gateway" options="-parameters" />
+      <module name="gateway-service" options="-parameters" />
+      <module name="gateway-service (1)" options="-parameters" />
       <module name="mailing-service" options="-parameters" />
+      <module name="test-sec" options="-parameters" />
       <module name="user-management-service" options="-parameters" />
     </option>
   </component>

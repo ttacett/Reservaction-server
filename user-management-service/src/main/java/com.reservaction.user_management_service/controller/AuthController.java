@@ -25,6 +25,7 @@ public class AuthController {
     @Autowired
     private LoginService loginService;
 
+
     @PostMapping("/register-user")
     public ResponseEntity<AppUser> registerUser(@RequestBody UserRegisterRequest request) throws IllegalAccessException {
         AppUser newUser = registerService.registerUser(

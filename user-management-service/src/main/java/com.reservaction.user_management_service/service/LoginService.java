@@ -45,14 +45,18 @@ public class LoginService {
                     new UsernamePasswordAuthenticationToken(username, password)
             );
 
+            AppUser user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
             Map<String, String> token = new HashMap<>();
             Instant instant = Instant.now();
             String scope = authentication.getAuthorities().stream().map(auth->auth.getAuthority()).collect(Collectors.joining(" "));
             JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
-                    .subject(authentication.getName())
+                    .subject(user.getId())
                     .issuedAt(instant)
                     .expiresAt(instant.plus(rememberMe?3:1, ChronoUnit.MINUTES))
                     .issuer("security")
+                    .claim("username", authentication.getName())
                     .claim("scope", scope)
                     .build();
             String JwtAccessToken = jwtEncoder.encode(JwtEncoderParameters.from(jwtClaimsSet)).getTokenValue();
