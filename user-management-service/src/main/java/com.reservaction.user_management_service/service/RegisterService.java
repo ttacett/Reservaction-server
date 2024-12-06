@@ -7,10 +7,12 @@ import com.reservaction.user_management_service.entity.AppUser;
 import com.reservaction.user_management_service.entity.UserRole;
 import com.reservaction.user_management_service.repository.RoleRepository;
 import com.reservaction.user_management_service.repository.UserRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -58,6 +60,8 @@ public class RegisterService {
         user.setRoles(roles);
         user.setVerificationToken(token);
         user.setEnabled(false);
+        user.setApproved(true);
+        user.setCreationDate(Instant.now());
 
         AppUser registeredUser = userRepository.save(user);
         sendVerificationEmail(email, token);
@@ -93,6 +97,7 @@ public class RegisterService {
         user.setVerificationToken(token);
         user.setEnabled(false);
         user.setApproved(false);
+        user.setCreationDate(Instant.now());
 
         AppUser registeredOrganizer = userRepository.save(user);
         sendVerificationEmail(email, token);
@@ -122,6 +127,7 @@ public class RegisterService {
         user.setPassword(hashedPassword);
         user.setRoles(roles);
         user.setEnabled(true);
+        user.setCreationDate(Instant.now());
 
         return userRepository.save(user);
     }

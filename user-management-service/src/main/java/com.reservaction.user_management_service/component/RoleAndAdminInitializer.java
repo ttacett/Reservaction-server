@@ -47,6 +47,7 @@ public class RoleAndAdminInitializer implements CommandLineRunner {
             admin.setEmail("admin@gmail.com");
             admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setEnabled(true);
+            admin.setApproved(true);
             admin.setRoles(List.of(
                     roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("ROLE_USER not found")),
                     roleRepository.findByName("ADMIN").orElseThrow(() -> new RuntimeException("ROLE_ADMIN not found"))

@@ -19,7 +19,7 @@ import java.util.List;
 public class AppUser {
 
     @Id
-    private String Id;
+    private String id;
     private String username;
     private String email;
 
@@ -40,4 +40,6 @@ public class AppUser {
     // supplement for organizers //
     private String organization;
     private boolean isApproved;
+
+    private Instant creationDate;
 }
