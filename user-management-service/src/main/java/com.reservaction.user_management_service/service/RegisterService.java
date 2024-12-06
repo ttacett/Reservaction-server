@@ -168,4 +168,28 @@ public class RegisterService {
         user.setApproved(true);
         userRepository.save(user);
     }
+
+    // disabling users account //
+    public void disableUser(String id) {
+        AppUser user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.isEnabled()) {
+            throw new IllegalStateException("User is already disabled");
+        }
+        user.setEnabled(false);
+        userRepository.save(user);
+    }
+
+    // enabling users account //
+    public void enableUser(String id) {
+        AppUser user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.isEnabled()) {
+            throw new IllegalStateException("User is already enabled");
+        }
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
 }

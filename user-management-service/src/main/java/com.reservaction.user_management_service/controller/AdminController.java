@@ -37,4 +37,24 @@ public class AdminController {
             return ResponseEntity.status(400).body(e.getMessage());
         }
     }
+
+    @PostMapping("/disable-user")
+    public ResponseEntity<String> disableUser(@RequestParam String id) {
+        try {
+            registerService.disableUser(id);
+            return ResponseEntity.ok("User disabled successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/enable-user")
+    public ResponseEntity<String> enableUser(@RequestParam String id) {
+        try {
+            registerService.enableUser(id);
+            return ResponseEntity.ok("User enabled successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+    }
 }
