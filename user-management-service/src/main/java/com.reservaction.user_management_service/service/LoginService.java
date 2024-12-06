@@ -46,7 +46,7 @@ public class LoginService {
             );
 
             AppUser user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(()->new RuntimeException("User not found"));
 
             Map<String, String> token = new HashMap<>();
             Instant instant = Instant.now();
