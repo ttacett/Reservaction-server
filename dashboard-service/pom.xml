@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.reservaction</groupId>
-	<artifactId>test-sec</artifactId>
+	<artifactId>dashboard-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>test-sec</name>
-	<description>Discovery</description>
+	<name>dashboard-service</name>
+	<description>dashboard management service</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -68,7 +68,13 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.reservaction</groupId>
+            <artifactId>user-management-service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>

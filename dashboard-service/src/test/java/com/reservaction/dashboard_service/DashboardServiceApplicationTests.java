@@ -1,10 +1,10 @@
-package com.reservaction.test_sec;
+package com.reservaction.dashboard_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TestSecApplicationTests {
+class DashboardServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

@@ -49,7 +49,6 @@ public class RoleAndAdminInitializer implements CommandLineRunner {
             admin.setEnabled(true);
             admin.setApproved(true);
             admin.setRoles(List.of(
-                    roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("ROLE_USER not found")),
                     roleRepository.findByName("ADMIN").orElseThrow(() -> new RuntimeException("ROLE_ADMIN not found"))
             ));
             userRepository.save(admin);

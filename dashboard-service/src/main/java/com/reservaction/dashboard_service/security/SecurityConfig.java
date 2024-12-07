@@ -1,4 +1,4 @@
-package com.reservaction.test_sec.security;
+package com.reservaction.dashboard_service.security;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

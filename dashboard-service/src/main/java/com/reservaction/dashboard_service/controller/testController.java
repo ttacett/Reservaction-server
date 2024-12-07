@@ -1,4 +1,4 @@
-package com.reservaction.test_sec.controller;
+package com.reservaction.dashboard_service.controller;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;

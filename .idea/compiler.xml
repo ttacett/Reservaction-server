@@ -7,7 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="mailing-service" />
-        <module name="test-sec" />
+        <module name="dashboard-service" />
         <module name="user-management-service" />
         <module name="discovery-service" />
         <module name="gateway-service" />
@@ -21,13 +21,13 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="dashboard-service" options="-parameters" />
       <module name="discovery-service" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
       <module name="gateway" options="-parameters" />
       <module name="gateway-service" options="-parameters" />
       <module name="gateway-service (1)" options="-parameters" />
       <module name="mailing-service" options="-parameters" />
-      <module name="test-sec" options="-parameters" />
       <module name="user-management-service" options="-parameters" />
     </option>
   </component>

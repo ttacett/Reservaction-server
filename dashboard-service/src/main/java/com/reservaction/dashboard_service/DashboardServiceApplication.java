@@ -1,16 +1,18 @@
-package com.reservaction.test_sec;
+package com.reservaction.dashboard_service;
 
-import com.reservaction.test_sec.security.RsaKeysConfig;
+import com.reservaction.dashboard_service.security.RsaKeysConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableConfigurationProperties(RsaKeysConfig.class)
-public class TestSecApplication {
+@EnableFeignClients
+public class DashboardServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TestSecApplication.class, args);
+		SpringApplication.run(DashboardServiceApplication.class, args);
 	}
 
 }
