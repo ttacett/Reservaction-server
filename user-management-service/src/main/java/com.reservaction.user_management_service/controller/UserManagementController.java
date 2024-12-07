@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -23,6 +24,8 @@ public class UserManagementController {
     @Autowired
     private UserService userService;
 
+
+    // FOR DASHBOARD-SERVICE //
     @GetMapping("/organizers")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_MODERATOR')")
     public ResponseEntity<List<UserResponse>> getOrganizers() {
@@ -36,11 +39,22 @@ public class UserManagementController {
         List<UserResponse> attendees = userService.getUsersByRole("USER");
         return ResponseEntity.ok(attendees);
     }
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+
     @GetMapping("/moderators")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<List<UserResponse>> getModerators() {
         List<UserResponse> moderators = userService.getUsersByRole("MODERATOR");
         return ResponseEntity.ok(moderators);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_MODERATOR')")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(userService.getUserById(id));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @PostMapping("/moderators")

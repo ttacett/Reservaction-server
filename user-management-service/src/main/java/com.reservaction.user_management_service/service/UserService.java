@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,9 +27,28 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<AppUser> getUserById(String id){
-        return Optional.ofNullable(userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found" + id)));
+    public UserResponse getUserById(String id) {
+        Optional<AppUser> userOptional = userRepository.findById(id);
+
+        if (userOptional.isEmpty()) {
+            throw new NoSuchElementException("User not found");
+        }
+
+        AppUser user = userOptional.get();
+        
+        boolean isOrganizer = user.getRoles().stream()
+                .anyMatch(role -> "ORGANIZER".equalsIgnoreCase(role.getName()));
+
+        return new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRoles(),
+                user.isEnabled() ? "Active" : "Disabled",
+                user.getOrganization() != null ? user.getOrganization() : "N/A",
+                isOrganizer && user.isApproved() ? "Approved" : "Pending",
+                user.getCreationDate()
+        );
     }
 
     public Optional<AppUser> getUserByUsername(String username){
@@ -58,9 +78,9 @@ public class UserService {
                         user.getUsername(),
                         user.getEmail(),
                         user.getRoles(),
-                        user.isEnabled() ? "Active" : "Disabled", // Map to "Active" or "Disabled"
-                        user.getOrganization(),
-                        "ORGANIZER".equalsIgnoreCase(roleName) && user.isApproved() ? "Approved" : "Pending", // Check isApproved for ORGANIZER
+                        user.isEnabled() ? "Active" : "Disabled",
+                        user.getOrganization() != null ? user.getOrganization() : "N/A",
+                        "ORGANIZER".equalsIgnoreCase(roleName) && user.isApproved() ? "Approved" : "Pending",
                         user.getCreationDate()
                 ))
                 .collect(Collectors.toList());
