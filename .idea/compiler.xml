@@ -2,12 +2,14 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="mailing-service" />
         <module name="dashboard-service" />
+        <module name="event-service" />
         <module name="user-management-service" />
         <module name="discovery-service" />
         <module name="gateway-service" />
@@ -24,6 +26,7 @@
       <module name="dashboard-service" options="-parameters" />
       <module name="discovery-service" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
+      <module name="event-service" options="-parameters" />
       <module name="gateway" options="-parameters" />
       <module name="gateway-service" options="-parameters" />
       <module name="gateway-service (1)" options="-parameters" />

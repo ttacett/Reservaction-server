@@ -13,6 +13,7 @@
         <option value="$PROJECT_DIR$/gateway-service/pom.xml" />
         <option value="$PROJECT_DIR$/fixed-gateway-service/pom.xml" />
         <option value="$PROJECT_DIR$/dashboard-service/pom.xml" />
+        <option value="$PROJECT_DIR$/event-service/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

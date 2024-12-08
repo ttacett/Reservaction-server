@@ -35,7 +35,7 @@ public class UserService {
         }
 
         AppUser user = userOptional.get();
-        
+
         boolean isOrganizer = user.getRoles().stream()
                 .anyMatch(role -> "ORGANIZER".equalsIgnoreCase(role.getName()));
 
