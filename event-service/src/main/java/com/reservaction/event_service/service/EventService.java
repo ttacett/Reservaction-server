@@ -5,6 +5,7 @@ import com.reservaction.event_service.dto.EventResponse;
 import com.reservaction.event_service.entity.Event;
 import com.reservaction.event_service.entity.ImageData;
 import com.reservaction.event_service.repository.EventRepository;
+import com.reservaction.event_service.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ public class EventService {
     public Event createEvent(EventRequest eventRequest) throws Exception {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime dateTime = LocalDateTime.parse(eventRequest.getDateTime(), formatter);
+        String organizerId = JwtUtil.getUserIdFromJwt();
 
         ImageData imageData = imageService.uploadImage(eventRequest.getImage());
 
@@ -40,6 +42,7 @@ public class EventService {
                 .ticketUnitPrice(eventRequest.getTicketUnitPrice())
                 .description(eventRequest.getDescription())
                 .image(imageData)
+                .organizerId(organizerId)
                 .build();
 
         return eventRepository.save(event);

@@ -49,6 +49,10 @@ public class Event {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private ImageData image;
+
+    @Column(nullable = false)
+    private String organizerId;
+
 }
 
 

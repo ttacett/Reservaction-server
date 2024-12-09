@@ -18,4 +18,5 @@ public class EventResponse {
     private String imageName;
     private String imageType;
     private String imageBase64;
+    private String organizerId;
 }
