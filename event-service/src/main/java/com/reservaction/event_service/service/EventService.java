@@ -61,29 +61,36 @@ public class EventService {
         return mapToResponse(savedEvent, base64Image);
     }
 
-//    // Get Event by ID //
-//    public EventResponse getEventById(Long eventId) {
-//        Event event = eventRepository.findById(eventId)
-//                .orElseThrow(() -> new RuntimeException("Event not found"));
-//
-//        String base64Image = Base64.getEncoder().encodeToString(event.getImage().getDecompressedData());
-//        return mapToResponse(event, base64Image);
-//    }
-//
-//    // Get All Events //
-//    public List<EventResponse> getAllEvents() {
-//        List<Event> events = eventRepository.findAll();
-//
-//        return events.stream().map(event -> {
-//            String base64Image = Base64.getEncoder().encodeToString(event.getImage().getDecompressedData());
-//            return mapToResponse(event, base64Image);
-//        }).collect(Collectors.toList());
-//    }
+    // Get Event by ID //
+    public EventResponse getEventById(Long eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        String base64Image = Base64.getEncoder().encodeToString(event.getImage().getDecompressedData());
+        return mapToResponse(event, base64Image);
+    }
+
+    // Get All Events //
+    public List<EventResponse> getAllEvents() {
+        List<Event> events = eventRepository.findAll();
+
+        return events.stream().map(event -> {
+            String base64Image = Base64.getEncoder().encodeToString(event.getImage().getDecompressedData());
+            return mapToResponse(event, base64Image);
+        }).collect(Collectors.toList());
+    }
 
     // Update Event //
     public EventResponse updateEvent(Long eventId, EventRequest eventRequest) throws Exception {
+
+        String loggedInUserId = JwtUtil.getUserIdFromJwt();
+
         Event existingEvent = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        if (!existingEvent.getOrganizerId().equals(loggedInUserId)) {
+            throw new RuntimeException("You are not authorized to access this event.");
+        }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime dateTime = LocalDateTime.parse(eventRequest.getDateTime(), formatter);
@@ -120,40 +127,45 @@ public class EventService {
 
     // Delete Event //
     public void deleteEvent(Long eventId) {
-        if (!eventRepository.existsById(eventId)) {
-            throw new RuntimeException("Event not found");
-        }
-        eventRepository.deleteById(eventId);
-    }
-
-    //allow organizer to access their event //
-    public EventResponse getEventById(Long eventId) {
         String loggedInUserId = JwtUtil.getUserIdFromJwt();
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
         if (!event.getOrganizerId().equals(loggedInUserId)) {
-            throw new RuntimeException("You are not authorized to view this event.");
+            throw new RuntimeException("You are not authorized to access this event.");
         }
-
-        String base64Image = Base64.getEncoder().encodeToString(event.getImage().getDecompressedData());
-        return mapToResponse(event, base64Image);
+        eventRepository.deleteById(eventId);
     }
+
+    //allow organizer to access their event //
+//    public EventResponse getEventById(Long eventId) {
+//        String loggedInUserId = JwtUtil.getUserIdFromJwt();
+//
+//        Event event = eventRepository.findById(eventId)
+//                .orElseThrow(() -> new RuntimeException("Event not found"));
+//
+//        if (!event.getOrganizerId().equals(loggedInUserId)) {
+//            throw new RuntimeException("You are not authorized to view this event.");
+//        }
+//
+//        String base64Image = Base64.getEncoder().encodeToString(event.getImage().getDecompressedData());
+//        return mapToResponse(event, base64Image);
+//    }
 
     // Get events for logged organizer only //
-    public List<EventResponse> getAllEvents() {
-        String loggedInUserId = JwtUtil.getUserIdFromJwt();
-
-        List<Event> events = eventRepository.findAll().stream()
-                .filter(event -> event.getOrganizerId().equals(loggedInUserId))
-                .toList();
-
-        return events.stream().map(event -> {
-            String base64Image = Base64.getEncoder().encodeToString(event.getImage().getDecompressedData());
-            return mapToResponse(event, base64Image);
-        }).collect(Collectors.toList());
-    }
+//    public List<EventResponse> getAllEvents() {
+//        String loggedInUserId = JwtUtil.getUserIdFromJwt();
+//
+//        List<Event> events = eventRepository.findAll().stream()
+//                .filter(event -> event.getOrganizerId().equals(loggedInUserId))
+//                .toList();
+//
+//        return events.stream().map(event -> {
+//            String base64Image = Base64.getEncoder().encodeToString(event.getImage().getDecompressedData());
+//            return mapToResponse(event, base64Image);
+//        }).collect(Collectors.toList());
+//    }
 
     // Map Event to EventResponse //
     private EventResponse mapToResponse(Event event, String base64Image) {

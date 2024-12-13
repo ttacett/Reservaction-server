@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/events")
-@PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
+@PreAuthorize("hasAuthority('SCOPE_ORGANIZER') or hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_MODERATOR')")
 public class EventController {
 
     @Autowired

@@ -11,8 +11,9 @@
         <module name="dashboard-service" />
         <module name="event-service" />
         <module name="user-management-service" />
-        <module name="discovery-service" />
         <module name="gateway-service" />
+        <module name="reservation-service" />
+        <module name="discovery-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -31,6 +32,7 @@
       <module name="gateway-service" options="-parameters" />
       <module name="gateway-service (1)" options="-parameters" />
       <module name="mailing-service" options="-parameters" />
+      <module name="reservation-service" options="-parameters" />
       <module name="user-management-service" options="-parameters" />
     </option>
   </component>
