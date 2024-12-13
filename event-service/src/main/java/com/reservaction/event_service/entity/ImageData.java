@@ -19,7 +19,15 @@ public class ImageData {
 
     private String name;
     private String type;
+
     @Lob
-    @Column(name = "imagedata",length = 1000)
-    private byte[] imageData;
+    @Column(nullable = false)
+    private byte[] compressedData;
+
+    @Lob
+    @Column(nullable = false)
+    private byte[] decompressedData;
+
+    public ImageData(byte[] compressedImage, byte[] decompressedImage) {
+    }
 }

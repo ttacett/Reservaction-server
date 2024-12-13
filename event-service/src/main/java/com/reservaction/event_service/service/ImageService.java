@@ -1,14 +1,11 @@
 package com.reservaction.event_service.service;
 
-import com.reservaction.event_service.entity.ImageData;
 import com.reservaction.event_service.repository.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Optional;
+import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
@@ -17,46 +14,32 @@ public class ImageService {
     @Autowired
     private ImageRepository imageRepository;
 
-    public ImageData uploadImage(MultipartFile file) throws IOException {
-        return imageRepository.save(ImageData.builder()
-                .name(file.getOriginalFilename())
-                .type(file.getContentType())
-                .imageData(compressImage(file.getBytes()))
-                .build());
-    }
-
-    public byte[] downloadImage(String fileName) {
-        Optional<ImageData> dbImageData = imageRepository.findByName(fileName);
-        return decompressImage(dbImageData.get().getImageData());
-    }
-
-    private byte[] compressImage(byte[] data) {
+    public byte[] compress(byte[] data) throws IOException {
         Deflater deflater = new Deflater();
-        deflater.setLevel(Deflater.BEST_COMPRESSION);
         deflater.setInput(data);
         deflater.finish();
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        byte[] tmp = new byte[4 * 1024];
-        while (!deflater.finished()) {
-            int size = deflater.deflate(tmp);
-            outputStream.write(tmp, 0, size);
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length)) {
+            byte[] buffer = new byte[1024];
+            while (!deflater.finished()) {
+                int count = deflater.deflate(buffer);
+                outputStream.write(buffer, 0, count);
+            }
+            return outputStream.toByteArray();
         }
-        return outputStream.toByteArray();
     }
 
-    private byte[] decompressImage(byte[] data) {
+    public byte[] decompress(byte[] data) throws IOException, DataFormatException {
         Inflater inflater = new Inflater();
         inflater.setInput(data);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        byte[] tmp = new byte[4 * 1024];
-        try {
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length)) {
+            byte[] buffer = new byte[1024];
             while (!inflater.finished()) {
-                int count = inflater.inflate(tmp);
-                outputStream.write(tmp, 0, count);
+                int count = inflater.inflate(buffer);
+                outputStream.write(buffer, 0, count);
             }
-        } catch (Exception ignored) {
+            return outputStream.toByteArray();
         }
-        return outputStream.toByteArray();
     }
 }

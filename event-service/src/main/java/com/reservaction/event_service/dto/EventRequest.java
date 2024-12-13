@@ -15,4 +15,6 @@ public class EventRequest {
     private Double ticketUnitPrice;
     private String description;
     private MultipartFile image;
+    private String imageName;
+    private String imageType;
 }

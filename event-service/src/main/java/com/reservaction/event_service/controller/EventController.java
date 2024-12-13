@@ -2,7 +2,6 @@ package com.reservaction.event_service.controller;
 
 import com.reservaction.event_service.dto.EventRequest;
 import com.reservaction.event_service.dto.EventResponse;
-import com.reservaction.event_service.entity.Event;
 import com.reservaction.event_service.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,7 @@ public class EventController {
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<?> createEvent(@ModelAttribute EventRequest eventRequest) {
         try {
-            Event event = eventService.createEvent(eventRequest);
+            EventResponse event = eventService.createEvent(eventRequest);
             return ResponseEntity.ok(event);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -32,27 +31,21 @@ public class EventController {
     }
 
     // get all events //
-//    @GetMapping
-//    public ResponseEntity<?> getAllEvents() {
-//        try {
-//            List<Event> events = eventService.getAllEvents();
-//            return ResponseEntity.ok(events);
-//        } catch (Exception e) {
-//            return ResponseEntity.internalServerError().body(e.getMessage());
-//        }
-//    }
-
     @GetMapping
-    public ResponseEntity<List<EventResponse>> getAllEvents() {
-        List<EventResponse> events = eventService.getAllEvents();
-        return ResponseEntity.ok(events);
+    public ResponseEntity<?> getAllEvents() {
+        try {
+            List<EventResponse> events = eventService.getAllEvents();
+            return ResponseEntity.ok(events);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
     }
 
     // get event by ID //
     @GetMapping("/{id}")
     public ResponseEntity<?> getEventById(@PathVariable Long id) {
         try {
-            Event event = eventService.getEventById(id);
+            EventResponse event = eventService.getEventById(id);
             return ResponseEntity.ok(event);
         } catch (Exception e) {
             return ResponseEntity.status(404).body(e.getMessage());
@@ -66,7 +59,7 @@ public class EventController {
             @ModelAttribute EventRequest eventRequest
     ) {
         try {
-            Event updatedEvent = eventService.updateEvent(id, eventRequest);
+            EventResponse updatedEvent = eventService.updateEvent(id, eventRequest);
             return ResponseEntity.ok(updatedEvent);
         } catch (Exception e) {
             return ResponseEntity.status(400).body(e.getMessage());
