@@ -42,4 +42,8 @@ public class AppUser {
     private boolean isApproved;
 
     private Instant creationDate;
+
+    // for payment ref //
+    private String organizerStripeAccount;
+    private String stripeOnboardingStatus;
 }

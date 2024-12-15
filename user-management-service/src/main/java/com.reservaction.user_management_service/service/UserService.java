@@ -3,9 +3,18 @@ package com.reservaction.user_management_service.service;
 
 import com.reservaction.user_management_service.dto.UserResponse;
 import com.reservaction.user_management_service.entity.AppUser;
+import com.reservaction.user_management_service.entity.StripeOnboardingStatus;
 import com.reservaction.user_management_service.entity.UserRole;
 import com.reservaction.user_management_service.repository.RoleRepository;
 import com.reservaction.user_management_service.repository.UserRepository;
+
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Account;
+import com.stripe.model.AccountLink;
+
+import com.stripe.param.AccountCreateParams;
+import com.stripe.param.AccountLinkCreateParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -84,6 +93,74 @@ public class UserService {
                         user.getCreationDate()
                 ))
                 .collect(Collectors.toList());
+    }
+
+
+    public String connectStripeAccount(String userId) throws Exception {
+        Stripe.apiKey = "sk_test_51QNFpAGyn2SQYaBfihz3dOWtFpwRWtvP4UDSe63TQEiJKwtCrPphBZeoR4jJfD4lboPKabpVSLyxomHbP8vuPdEb00Or2dylJG";
+        // Fetch user by ID //
+        AppUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Check if user has Stripe acc linked //
+        if (user.getStripeOnboardingStatus() != null &&
+                StripeOnboardingStatus.COMPLETED.equals(user.getStripeOnboardingStatus())) {
+            throw new RuntimeException("Stripe account already fully linked.");
+        }
+
+        if (user.getOrganizerStripeAccount() != null) {
+            throw new RuntimeException("Stripe account already linked for this user.");
+        }
+
+        // Create Stripe acc //
+        Account account = createStripeAccount(user);
+
+        // Update Stripe acc id and onboarding status for user //
+        user.setOrganizerStripeAccount(account.getId());
+        user.setStripeOnboardingStatus(StripeOnboardingStatus.PENDING);
+        userRepository.save(user);
+
+        // Generate onboarding Stripe link by passing user and acc ID //
+        String paymentUrl = createAccountLink(user, account.getId());
+
+        return paymentUrl;
+    }
+
+
+    private Account createStripeAccount(AppUser user) throws Exception {
+        Stripe.apiKey = "sk_test_51QNFpAGyn2SQYaBfihz3dOWtFpwRWtvP4UDSe63TQEiJKwtCrPphBZeoR4jJfD4lboPKabpVSLyxomHbP8vuPdEb00Or2dylJG";
+        return Account.create(AccountCreateParams.builder()
+                .setType(AccountCreateParams.Type.EXPRESS)
+                .setEmail(user.getEmail())
+                .setCountry("US")
+                .setCapabilities(AccountCreateParams.Capabilities.builder()
+                        .setTransfers(AccountCreateParams.Capabilities.Transfers.builder()
+                                .setRequested(true)
+                                .build())
+                        .build())
+                .build());
+    }
+
+    public String createAccountLink(AppUser user, String accountId) throws StripeException {
+        Stripe.apiKey = "sk_test_51QNFpAGyn2SQYaBfihz3dOWtFpwRWtvP4UDSe63TQEiJKwtCrPphBZeoR4jJfD4lboPKabpVSLyxomHbP8vuPdEb00Or2dylJG";
+        String refreshUrl = "http://localhost:8888/user-management-service/api/v1/stripe/onboard/refresh?userId=" + user.getId();
+        String returnUrl = "http://localhost:8888/user-management-service/api/v1/stripe/onboard/return";
+
+        AccountLink accountLink = AccountLink.create(AccountLinkCreateParams.builder()
+                .setAccount(accountId)
+                .setRefreshUrl(refreshUrl)
+                .setReturnUrl(returnUrl)
+                .setType(AccountLinkCreateParams.Type.ACCOUNT_ONBOARDING)
+                .build());
+
+        return accountLink.getUrl();
+    }
+    public void markStripeOnboardingComplete(String accountId) {
+        Stripe.apiKey = "sk_test_51QNFpAGyn2SQYaBfihz3dOWtFpwRWtvP4UDSe63TQEiJKwtCrPphBZeoR4jJfD4lboPKabpVSLyxomHbP8vuPdEb00Or2dylJG";
+        AppUser user = userRepository.findByOrganizerStripeAccount(accountId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setStripeOnboardingStatus(StripeOnboardingStatus.COMPLETED);
+        userRepository.save(user);
     }
 
 }
