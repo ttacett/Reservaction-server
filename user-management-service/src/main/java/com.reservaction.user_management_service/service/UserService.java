@@ -144,7 +144,7 @@ public class UserService {
     public String createAccountLink(AppUser user, String accountId) throws StripeException {
         Stripe.apiKey = "sk_test_51QNFpAGyn2SQYaBfihz3dOWtFpwRWtvP4UDSe63TQEiJKwtCrPphBZeoR4jJfD4lboPKabpVSLyxomHbP8vuPdEb00Or2dylJG";
         String refreshUrl = "http://localhost:8888/user-management-service/api/v1/stripe/onboard/refresh?userId=" + user.getId();
-        String returnUrl = "http://localhost:8888/user-management-service/api/v1/stripe/onboard/return";
+        String returnUrl = "http://localhost:8888/user-management-service/api/v1/stripe/onboard/return?accountId=" + user.getOrganizerStripeAccount();
 
         AccountLink accountLink = AccountLink.create(AccountLinkCreateParams.builder()
                 .setAccount(accountId)

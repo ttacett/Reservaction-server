@@ -25,6 +25,7 @@ public class StripeController {
         return ResponseEntity.ok(accountLink);
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @GetMapping("/onboard/refresh")
     public ResponseEntity<?> refreshStripeOnboarding() {
         try {
@@ -40,6 +41,7 @@ public class StripeController {
         }
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @GetMapping("/onboard/return")
     public ResponseEntity<?> handleOnboardingSuccess(@RequestParam String accountId) {
         try {
