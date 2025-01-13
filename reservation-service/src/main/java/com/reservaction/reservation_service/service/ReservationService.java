@@ -11,16 +11,15 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-@Service
+/*@Service
 public class ReservationService {
 
     @Autowired
     private ReservationRepository reservationRepository;
-
     @Autowired
     private EventServiceClient eventServiceClient;
 
-    public ReservationResponse reserveEvent(ReservationRequest request) {
+    public Reservation reserveEvent(ReservationRequest request) {
         String attendeeId = JwtUtil.getUserIdFromJwt();
 
         EventServiceClient.EventResponse event = eventServiceClient.getEventById(request.getEventId());
@@ -37,25 +36,74 @@ public class ReservationService {
                 .numberOfTickets(request.getNumberOfTickets())
                 .totalPrice(totalPrice)
                 .reservationDate(LocalDateTime.now())
+                .status(Reservation.ReservationStatus.PENDING)
+                .build();
+
+        return reservationRepository.save(reservation);
+    }
+}*/
+
+
+
+
+
+@Service
+public class ReservationService {
+
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private EventServiceClient eventServiceClient;
+
+    public ReservationResponse reserveEvent(ReservationRequest request) {
+
+        // Validate event & ticket availability //
+        EventServiceClient.EventResponse event = eventServiceClient.getEventById(request.getEventId());
+        if (event.getNumberOfTickets() < request.getNumberOfTickets()) {
+            throw new RuntimeException("Not enough tickets available.");
+        }
+
+        // Create a "PENDING" reservation //
+        Reservation reservation = Reservation.builder()
+                .attendeeId(JwtUtil.getUserIdFromJwt())
+                .eventId(event.getId())
+                .numberOfTickets(request.getNumberOfTickets())
+                .totalPrice(event.getTicketUnitPrice() * request.getNumberOfTickets())
+                .status(Reservation.ReservationStatus.PENDING)
+                .reservationDate(LocalDateTime.now())
                 .build();
 
         Reservation savedReservation = reservationRepository.save(reservation);
-
-
-        return mapToResponse(savedReservation, event);
+        return mapToResponse(savedReservation);
     }
 
-    private ReservationResponse mapToResponse(Reservation reservation, EventServiceClient.EventResponse event) {
-        ReservationResponse response = new ReservationResponse();
-        response.setReservationId(reservation.getId());
-        response.setEventId(reservation.getEventId());
-        response.setAttendeeId(reservation.getAttendeeId());
-        response.setNumberOfTickets(reservation.getNumberOfTickets());
-        response.setReservationDate(reservation.getReservationDate());
-        response.setEventTitle(event.getTitle());
-        response.setTicketUnitPrice(event.getTicketUnitPrice());
-        response.setTotalPrice(reservation.getTotalPrice());
-        return response;
+    public ReservationResponse getReservationDetails(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+
+        return mapToResponse(reservation);
+    }
+
+    public void confirmReservation(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+
+        reservation.setStatus(Reservation.ReservationStatus.COMPLETED);
+        reservationRepository.save(reservation);
+    }
+
+    private ReservationResponse mapToResponse(Reservation reservation) {
+        return ReservationResponse.builder()
+                .reservationId(reservation.getId())
+                .eventId(reservation.getEventId())
+                .attendeeId(reservation.getAttendeeId())
+                .numberOfTickets(reservation.getNumberOfTickets())
+                .totalPrice(reservation.getTotalPrice())
+                .reservationDate(reservation.getReservationDate())
+                .status(reservation.getStatus())
+                .build();
     }
 }
+
 

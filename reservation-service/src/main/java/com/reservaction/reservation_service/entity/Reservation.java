@@ -33,4 +33,12 @@ public class Reservation {
     @Column(nullable = false)
     private LocalDateTime reservationDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReservationStatus status;
+
+    public enum ReservationStatus {
+        PENDING,
+        COMPLETED
+    }
 }

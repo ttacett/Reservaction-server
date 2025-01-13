@@ -1,4 +1,4 @@
-package com.reservaction.gateway_service;
+package com.reservaction.gateway_service.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

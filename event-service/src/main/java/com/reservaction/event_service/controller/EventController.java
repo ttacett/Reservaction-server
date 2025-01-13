@@ -13,13 +13,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/events")
-@PreAuthorize("hasAuthority('SCOPE_ORGANIZER') or hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_MODERATOR')")
 public class EventController {
 
     @Autowired
     private EventService eventService;
 
     // create event //
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER') or hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_MODERATOR')")
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<?> createEvent(@ModelAttribute EventRequest eventRequest) {
         try {
@@ -31,6 +31,7 @@ public class EventController {
     }
 
     // get all events //
+    //@PreAuthorize("hasAuthority('SCOPE_ORGANIZER') or hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_MODERATOR') or hasAuthority('SCOPE_USER')")
     @GetMapping
     public ResponseEntity<?> getAllEvents() {
         try {
@@ -42,6 +43,7 @@ public class EventController {
     }
 
     // get event by ID //
+    //@PreAuthorize("hasAuthority('SCOPE_ORGANIZER') or hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_MODERATOR') or hasAuthority('SCOPE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getEventById(@PathVariable Long id) {
         try {
@@ -53,6 +55,7 @@ public class EventController {
     }
 
     // update event //
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER') or hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_MODERATOR')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateEvent(
             @PathVariable Long id,
@@ -67,6 +70,7 @@ public class EventController {
     }
 
     // delete event //
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER') or hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_MODERATOR')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
         try {

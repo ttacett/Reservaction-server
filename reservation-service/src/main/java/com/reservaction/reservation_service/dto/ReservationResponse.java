@@ -1,10 +1,12 @@
 package com.reservaction.reservation_service.dto;
 
 
+import com.reservaction.reservation_service.entity.Reservation;
+import lombok.Builder;
 import lombok.Data;
 import java.time.LocalDateTime;
 
-@Data
+@Data @Builder
 public class ReservationResponse {
     private Long reservationId;
     private Long eventId;
@@ -14,5 +16,6 @@ public class ReservationResponse {
     private double totalPrice;
     private LocalDateTime reservationDate;
     private String eventTitle;
+    private Reservation.ReservationStatus status;
 }
 
