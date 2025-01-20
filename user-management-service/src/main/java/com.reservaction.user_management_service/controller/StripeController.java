@@ -13,6 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/stripe")
+@CrossOrigin
 public class StripeController {
     @Autowired
     private UserService userService;
