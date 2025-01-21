@@ -20,7 +20,7 @@ public class PaymentService {
 
         Stripe.apiKey = "sk_test_51QNFpAGyn2SQYaBfihz3dOWtFpwRWtvP4UDSe63TQEiJKwtCrPphBZeoR4jJfD4lboPKabpVSLyxomHbP8vuPdEb00Or2dylJG";
 
-        // Get reservation details from reservation service
+        // Get reservation details from reservation service //
         ReservationServiceClient.ReservationResponse reservation =
                 reservationServiceClient.getReservationDetails(reservationId);
 
@@ -30,14 +30,14 @@ public class PaymentService {
 
         Session session = null;
         try {
-            // Build the session parameters
+            // Build session params //
             SessionCreateParams.LineItem.PriceData.ProductData productData = SessionCreateParams.LineItem.PriceData.ProductData.builder()
                     .setName("Ticket Reservation #" + reservation.getReservationId())
                     .setDescription(reservation.getEventTitle() + " - " + reservation.getNumberOfTickets() + " tickets")
                     .build();
 
             SessionCreateParams.LineItem.PriceData priceData = SessionCreateParams.LineItem.PriceData.builder()
-                    .setCurrency("USD")
+                    .setCurrency("usd")
                     .setUnitAmount((long) (reservation.getTicketUnitPrice() * 100))
                     .setProductData(productData)
                     .build();
@@ -54,14 +54,14 @@ public class PaymentService {
                     .addLineItem(lineItem)
                     .build();
 
-            // Attempt to create the session
+            // Create the session //
             session = Session.create(params);
 
         } catch (StripeException ex) {
             throw new RuntimeException("Failed to create Stripe session: " + ex.getMessage(), ex);
         }
 
-        // Ensure the session is not null before proceeding
+        // Ensure session is not null //
         if (session == null) {
             throw new RuntimeException("Stripe session creation returned null");
         }

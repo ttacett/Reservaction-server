@@ -94,16 +94,22 @@ public class ReservationService {
     }
 
     private ReservationResponse mapToResponse(Reservation reservation) {
+        // Retrieve event details //
+        EventServiceClient.EventResponse event = eventServiceClient.getEventById(reservation.getEventId());
+
         return ReservationResponse.builder()
                 .reservationId(reservation.getId())
                 .eventId(reservation.getEventId())
                 .attendeeId(reservation.getAttendeeId())
                 .numberOfTickets(reservation.getNumberOfTickets())
+                .ticketUnitPrice(event.getTicketUnitPrice())
+                .eventTitle(event.getTitle())
                 .totalPrice(reservation.getTotalPrice())
                 .reservationDate(reservation.getReservationDate())
                 .status(reservation.getStatus())
                 .build();
     }
+
 }
 
 
