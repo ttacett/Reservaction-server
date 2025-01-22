@@ -42,6 +42,17 @@ public class ReservationController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // Confirm reservation status //
+    @PostMapping("/{reservationId}/confirm")
+    public ResponseEntity<?> confirmReservation(@PathVariable Long reservationId) {
+        try {
+            reservationService.confirmReservation(reservationId);
+            return ResponseEntity.ok("Reservation marked as completed.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 }
 
 
