@@ -16,6 +16,7 @@ import com.stripe.model.AccountLink;
 import com.stripe.param.AccountCreateParams;
 import com.stripe.param.AccountLinkCreateParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -31,6 +32,9 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+
+    @Value("${stripe.api.key}")
+    private String stripeApiKey;
 
     public List<AppUser> getAllUsers(){
         return userRepository.findAll();
@@ -97,7 +101,7 @@ public class UserService {
 
 
     public String connectStripeAccount(String userId) throws Exception {
-        Stripe.apiKey = "sk_test_51QNFpAGyn2SQYaBfihz3dOWtFpwRWtvP4UDSe63TQEiJKwtCrPphBZeoR4jJfD4lboPKabpVSLyxomHbP8vuPdEb00Or2dylJG";
+        Stripe.apiKey = stripeApiKey;;
         // Fetch user by ID //
         AppUser user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -128,7 +132,7 @@ public class UserService {
 
 
     private Account createStripeAccount(AppUser user) throws Exception {
-        Stripe.apiKey = "sk_test_51QNFpAGyn2SQYaBfihz3dOWtFpwRWtvP4UDSe63TQEiJKwtCrPphBZeoR4jJfD4lboPKabpVSLyxomHbP8vuPdEb00Or2dylJG";
+        Stripe.apiKey = stripeApiKey;;
         return Account.create(AccountCreateParams.builder()
                 .setType(AccountCreateParams.Type.EXPRESS)
                 .setEmail(user.getEmail())
@@ -142,7 +146,7 @@ public class UserService {
     }
 
     public String createAccountLink(AppUser user, String accountId) throws StripeException {
-        Stripe.apiKey = "sk_test_51QNFpAGyn2SQYaBfihz3dOWtFpwRWtvP4UDSe63TQEiJKwtCrPphBZeoR4jJfD4lboPKabpVSLyxomHbP8vuPdEb00Or2dylJG";
+        Stripe.apiKey = stripeApiKey;;
         String refreshUrl = "http://localhost:8888/user-management-service/api/v1/stripe/onboard/refresh?userId=" + user.getId();
         String returnUrl = "http://localhost:8888/user-management-service/api/v1/stripe/onboard/return?accountId=" + user.getOrganizerStripeAccount();
 
@@ -156,7 +160,7 @@ public class UserService {
         return accountLink.getUrl();
     }
     public void markStripeOnboardingComplete(String accountId) {
-        Stripe.apiKey = "sk_test_51QNFpAGyn2SQYaBfihz3dOWtFpwRWtvP4UDSe63TQEiJKwtCrPphBZeoR4jJfD4lboPKabpVSLyxomHbP8vuPdEb00Or2dylJG";
+        Stripe.apiKey = stripeApiKey;;
         AppUser user = userRepository.findByOrganizerStripeAccount(accountId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setStripeOnboardingStatus(StripeOnboardingStatus.COMPLETED);

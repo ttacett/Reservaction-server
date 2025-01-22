@@ -12,6 +12,7 @@ import com.stripe.param.checkout.SessionCreateParams;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
@@ -25,8 +26,11 @@ public class PaymentService {
     @Autowired
     private UserServiceClient userServiceClient;
 
+    @Value("${stripe.api.key}")
+    private String stripeApiKey;
+
     public PaymentResponse checkout(Long reservationId) {
-        Stripe.apiKey = "sk_test_51QNFpAGyn2SQYaBfihz3dOWtFpwRWtvP4UDSe63TQEiJKwtCrPphBZeoR4jJfD4lboPKabpVSLyxomHbP8vuPdEb00Or2dylJG";
+        Stripe.apiKey = stripeApiKey;
 
         // Retrieve reservation details from reservation service
         ReservationServiceClient.ReservationResponse reservation =
