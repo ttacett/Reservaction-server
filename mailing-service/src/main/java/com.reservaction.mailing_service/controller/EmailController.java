@@ -1,8 +1,10 @@
 package com.reservaction.mailing_service.controller;
 
 import com.reservaction.mailing_service.dto.EmailRequest;
+import com.reservaction.mailing_service.dto.EmailReservation;
 import com.reservaction.mailing_service.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +33,16 @@ public class EmailController {
             return ResponseEntity.ok("Email sent successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error sending email: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/send-reservation")
+    public ResponseEntity<?> sendEmail(@RequestBody EmailReservation emailDetails) {
+        try {
+            emailService.sendReservationEmail(emailDetails.getEmail(), emailDetails.getSubject(), emailDetails.getBody());
+            return ResponseEntity.ok("Email sent successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email: " + e.getMessage());
         }
     }
 }

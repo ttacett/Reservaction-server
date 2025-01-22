@@ -17,5 +17,6 @@ public class ReservationResponse {
     private LocalDateTime reservationDate;
     private String eventTitle;
     private Reservation.ReservationStatus status;
+    private int remainingTickets;
 }
 

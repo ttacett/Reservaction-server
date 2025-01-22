@@ -1,5 +1,6 @@
 package com.reservaction.event_service.service;
 
+import com.reservaction.event_service.client.ReservationServiceClient;
 import com.reservaction.event_service.dto.EventRequest;
 import com.reservaction.event_service.dto.EventResponse;
 import com.reservaction.event_service.dto.OrganizerResponse;
@@ -23,9 +24,10 @@ public class EventService {
 
     @Autowired
     private EventRepository eventRepository;
-
     @Autowired
     private ImageService imageService;
+    @Autowired
+    private ReservationServiceClient reservationServiceClient;
 
     // Create event //
     public EventResponse createEvent(EventRequest eventRequest) throws Exception {
@@ -59,17 +61,29 @@ public class EventService {
         Event savedEvent = eventRepository.save(event);
 
         String base64Image = Base64.getEncoder().encodeToString(decompressedImage);
-        return mapToResponse(savedEvent, base64Image);
+        return mapToResponse(savedEvent, base64Image, 0);
     }
 
     // Get Event by ID //
     public EventResponse getEventById(Long eventId) {
+        // Fetch event from the repository
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
+        // Encode the event image to Base64 (already present in your code)
         String base64Image = Base64.getEncoder().encodeToString(event.getImage().getDecompressedData());
-        return mapToResponse(event, base64Image);
+
+        // Fetch the number of reserved tickets from the ReservationService
+        Integer reservedTickets = reservationServiceClient.getReservedTicketsForEvent(eventId);
+        reservedTickets = (reservedTickets != null) ? reservedTickets : 0;
+
+        // Calculate remaining tickets by subtracting reserved tickets from the total number of tickets
+        int remainingTickets = event.getNumberOfTickets() - reservedTickets;
+
+        // Return the event response, including the remaining tickets
+        return mapToResponse(event, base64Image, reservedTickets);
     }
+
 
     // Get organizer //
     public OrganizerResponse getOrganizerByEventId(Long eventId) {
@@ -86,7 +100,7 @@ public class EventService {
 
         return events.stream().map(event -> {
             String base64Image = Base64.getEncoder().encodeToString(event.getImage().getDecompressedData());
-            return mapToResponse(event, base64Image);
+            return mapToResponse(event, base64Image, 0);
         }).collect(Collectors.toList());
     }
 
@@ -131,7 +145,7 @@ public class EventService {
         Event updatedEvent = eventRepository.save(existingEvent);
 
         String base64Image = Base64.getEncoder().encodeToString(existingEvent.getImage().getDecompressedData());
-        return mapToResponse(updatedEvent, base64Image);
+        return mapToResponse(updatedEvent, base64Image, 0);
     }
 
 
@@ -146,6 +160,33 @@ public class EventService {
             throw new RuntimeException("You are not authorized to access this event.");
         }
         eventRepository.deleteById(eventId);
+    }
+
+    // Map Event to EventResponse //
+    private EventResponse mapToResponse(Event event, String base64Image, int reservedTickets) {
+        EventResponse response = new EventResponse();
+        response.setId(event.getId());
+        response.setTitle(event.getTitle());
+        response.setCategory(event.getCategory());
+        response.setAddress(event.getAddress());
+        response.setCity(event.getCity());
+        response.setEventDateTime(event.getEventDateTime());
+        response.setNumberOfTickets(event.getNumberOfTickets());
+        response.setTicketUnitPrice(event.getTicketUnitPrice());
+        response.setDescription(event.getDescription());
+        response.setImageName(event.getImage().getName());
+        response.setImageType(event.getImage().getType());
+        response.setImageBase64(base64Image);
+        response.setOrganizerId(event.getOrganizerId());
+        response.setReservedTickets(reservedTickets);
+        return response;
+    }
+
+    // Map Organizer to OrganizerResponse //
+    private OrganizerResponse mapToResponse(Event event) {
+        OrganizerResponse response = new OrganizerResponse();
+        response.setOrganizerId(event.getOrganizerId());
+        return response;
     }
 
     //allow organizer to access their event //
@@ -177,30 +218,9 @@ public class EventService {
 //        }).collect(Collectors.toList());
 //    }
 
-    // Map Event to EventResponse //
-    private EventResponse mapToResponse(Event event, String base64Image) {
-        EventResponse response = new EventResponse();
-        response.setId(event.getId());
-        response.setTitle(event.getTitle());
-        response.setCategory(event.getCategory());
-        response.setAddress(event.getAddress());
-        response.setCity(event.getCity());
-        response.setEventDateTime(event.getEventDateTime());
-        response.setNumberOfTickets(event.getNumberOfTickets());
-        response.setTicketUnitPrice(event.getTicketUnitPrice());
-        response.setDescription(event.getDescription());
-        response.setImageName(event.getImage().getName());
-        response.setImageType(event.getImage().getType());
-        response.setImageBase64(base64Image);
-        response.setOrganizerId(event.getOrganizerId());
-        return response;
-    }
 
-    // Map Organizer to OrganizerResponse //
-    private OrganizerResponse mapToResponse(Event event) {
-        OrganizerResponse response = new OrganizerResponse();
-        response.setOrganizerId(event.getOrganizerId());
-        return response;
-    }
+
+
+
 
 }

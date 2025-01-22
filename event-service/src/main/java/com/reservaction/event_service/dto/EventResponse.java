@@ -21,4 +21,5 @@ public class EventResponse {
     private String imageType;
     private String imageBase64;
     private String organizerId;
+    private int reservedTickets;
 }

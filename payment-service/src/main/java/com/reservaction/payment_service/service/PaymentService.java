@@ -74,10 +74,11 @@ public class PaymentService {
 
             SessionCreateParams params = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.PAYMENT)
-                    .setSuccessUrl("http://localhost:8888/payment-service/api/v1/payments/success?session_id={CHECKOUT_SESSION_ID}")
-                    .setCancelUrl("http://localhost:9090/cancel")
+                    .setSuccessUrl("http://localhost:5173/payment-success?session_id={CHECKOUT_SESSION_ID}")
+                    .setCancelUrl("http://localhost:5173/cancel")
                     .addLineItem(lineItem)
                     .putMetadata("reservationId", reservationId.toString())
+                    .putMetadata("eventName", reservation.getEventTitle())
                     .putMetadata("organizerStripeAccountId", organizerStripeAccountId)
                     .build();
 

@@ -2,6 +2,7 @@ package com.reservaction.reservation_service.controller;
 
 import com.reservaction.reservation_service.dto.ReservationRequest;
 import com.reservaction.reservation_service.dto.ReservationResponse;
+import com.reservaction.reservation_service.repository.ReservationRepository;
 import com.reservaction.reservation_service.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,8 @@ public class ReservationController {
 
     @Autowired
     private ReservationService reservationService;
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     // Reserve event //
     @PostMapping("/reserve")
@@ -53,6 +56,13 @@ public class ReservationController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    // Get total reserved tickets //
+    @GetMapping("/total/{eventId}")
+    public Integer getReservedTicketsForEvent(@PathVariable Long eventId) {
+        return reservationRepository.getReservedTicketsForEvent(eventId);
+    }
+
 }
 
 

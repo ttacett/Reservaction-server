@@ -11,6 +11,14 @@ public class EmailService {
     @Autowired
     JavaMailSender mailSender;
 
+    public void sendReservationEmail(String to, String subject, String body) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(body);
+        mailSender.send(message);
+    }
+
     public void sendResetPasswordEmail(String email, String token){
         String subject = "Password reset request";
         String resetUrl = "http://localhost:8888/user-management-service/api/v1/auth/reset-password?token=" + token;

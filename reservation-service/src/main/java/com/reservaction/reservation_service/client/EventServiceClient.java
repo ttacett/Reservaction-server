@@ -19,6 +19,7 @@ public interface EventServiceClient {
         private String title;
         private int numberOfTickets;
         private double ticketUnitPrice;
+        private int remainingTickets;
 
     }
 }
