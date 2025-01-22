@@ -163,4 +163,14 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public String getOrganizerStripeAccount(String organizerId) {
+        AppUser user = userRepository.findById(organizerId)
+                .orElseThrow(() -> new RuntimeException("Organizer not found"));
+        if (user.getOrganizerStripeAccount() == null) {
+            throw new RuntimeException("Organizer does not have a linked Stripe account.");
+        }
+        return user.getOrganizerStripeAccount();
+    }
+
+
 }

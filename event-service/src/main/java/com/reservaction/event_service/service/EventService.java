@@ -2,6 +2,7 @@ package com.reservaction.event_service.service;
 
 import com.reservaction.event_service.dto.EventRequest;
 import com.reservaction.event_service.dto.EventResponse;
+import com.reservaction.event_service.dto.OrganizerResponse;
 import com.reservaction.event_service.entity.Event;
 import com.reservaction.event_service.entity.ImageData;
 import com.reservaction.event_service.repository.EventRepository;
@@ -69,6 +70,15 @@ public class EventService {
         String base64Image = Base64.getEncoder().encodeToString(event.getImage().getDecompressedData());
         return mapToResponse(event, base64Image);
     }
+
+    // Get organizer //
+    public OrganizerResponse getOrganizerByEventId(Long eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        return mapToResponse(event);
+    }
+
 
     // Get All Events //
     public List<EventResponse> getAllEvents() {
@@ -182,6 +192,13 @@ public class EventService {
         response.setImageName(event.getImage().getName());
         response.setImageType(event.getImage().getType());
         response.setImageBase64(base64Image);
+        response.setOrganizerId(event.getOrganizerId());
+        return response;
+    }
+
+    // Map Organizer to OrganizerResponse //
+    private OrganizerResponse mapToResponse(Event event) {
+        OrganizerResponse response = new OrganizerResponse();
         response.setOrganizerId(event.getOrganizerId());
         return response;
     }

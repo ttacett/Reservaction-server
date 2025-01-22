@@ -2,8 +2,10 @@ package com.reservaction.event_service.controller;
 
 import com.reservaction.event_service.dto.EventRequest;
 import com.reservaction.event_service.dto.EventResponse;
+import com.reservaction.event_service.dto.OrganizerResponse;
 import com.reservaction.event_service.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +54,17 @@ public class EventController {
             return ResponseEntity.ok(event);
         } catch (Exception e) {
             return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/organizer/{id}")
+    public ResponseEntity<String> getOrganizerByEvent(@PathVariable Long id) {
+        try {
+            OrganizerResponse organizer = eventService.getOrganizerByEventId(id);
+            return ResponseEntity.ok(organizer.getOrganizerId());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Event not found: " + e.getMessage());
         }
     }
 

@@ -10,4 +10,6 @@ public class PaymentResponse {
     private String sessionUrl;
     private Long reservationId;
     private double amount;
+    private double commissionAmount;
+    private double organizerAmount;
 }
